@@ -1,0 +1,32 @@
+[
+	{
+		"city":"枣庄",
+		"latitude":34.815994,
+		"longitude":117.330542
+	},
+	{
+		"city":"东营",
+		"latitude":37.439642,
+		"longitude":118.681385
+	},
+	{
+		"city":"烟台",
+		"latitude":37.470038,
+		"longitude":121.454415
+	},
+	{
+		"city":"潍坊",
+		"latitude":36.712652,
+		"longitude":119.168378
+	},
+	{
+		"city":"济宁",
+		"latitude":35.420177,
+		"longitude":116.593612
+	},
+	{
+		"city":"泰安",
+		"latitude":36.205858,
+		"longitude":117.094495
+	}
+]
