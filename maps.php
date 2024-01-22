@@ -359,6 +359,7 @@
         var beidouDisplay = false;
         //图标的方向角度
         let direction = new Rad(0,140);
+        //地图的初始化、图标的添加
         geolocation.getCurrentPosition(function(r) {
             if (this.getStatus() == BMAP_STATUS_SUCCESS && start) {
                 start = false;
