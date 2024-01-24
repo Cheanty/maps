@@ -72,7 +72,6 @@
         .menu-box input[type='checkbox'] {
             display: none;                      /*让小勾选框消失*/
         }
-
         .menu-box>label {
             position: absolute;
             top: 48%;
@@ -89,8 +88,6 @@
             align-items: center;
             overflow: hidden;
         }
-
-
         .menu-box>label>i {
             font-weight: 900;
             text-indent: -3px;
@@ -98,19 +95,13 @@
             transition: transform var(--transition-menu-time);
             transform: rotate(0deg);
         }
-
-
         .menu-box>label:hover {
             box-shadow: 0px 0px 2px 0px #000;
             color: var(--font-color-mi-hover);
         }
-
-
         .menu-box>input#menu-btn:checked+label>i {
             transform: rotate(180deg);
         }
-
-
         .menu {
             font-size: 18px;
             width: 220px;
@@ -120,19 +111,13 @@
             transition: width var(--transition-menu-time);
             color: var(--font-color-mi);
         }
-
-
         .menu-box>input#menu-btn:checked~.menu {
             width: 0;
         }
-
-
         .menu-title {
             text-align: center;
             margin-bottom: 10px;
         }
-
-
         .menu-item>label{
             position: relative;
             width: 100%;
@@ -141,25 +126,17 @@
             display: flex;
             align-items: center;
         }
-
-
         .menu-item>label:hover {
             color: var(--font-color-mi-hover);
         }
-
-
         .menu-item>label>i:first-child {
             flex: none;
             margin-right: 6px;
             font-size: 24px;
         }
-
-
         .menu-item>label>span {
             flex: 1;
         }
-
-
         .menu-item>label>i:last-child {
             flex: none;
             font-size: 20px;
@@ -167,14 +144,12 @@
             transform: rotate(0deg);
             transition: transform var(--transition-menu-time);
         }
-
-
         .menu-item>input:checked+label>i:last-child {
             transform: rotate(180deg);
         }
-
-
         .menu-content {
+            max-height: 800px; /* 最大高度 */
+            overflow-y: auto;   /* 如果内容溢出，显示垂直滚动条 */
             height: 0;
             overflow: hidden;
             transition: height var(--transition-menu-time);
@@ -182,50 +157,43 @@
             flex-wrap: wrap;
             background-color: var(--color-menu-bg);
         }
+        .menu-content-wrapper{
+            max-height: 800px;  /* 设置最大高度 */
+            overflow-y: auto;   /* 如果内容溢出，显示垂直滚动条 */
+        }
          /* 菜单夹下选项个数，若 n 项，就 n * 40px */
          .menu-item>input#menu-item1:checked~.menu-content {
             height: calc(2 * 40px);
         }
-
-
         .menu-item>input#menu-item2:checked~.menu-content {
             height: calc(5 * 40px);
         }
-
-
         .menu-item>input#menu-item3:checked~.menu-content {
-            height: calc(4 * 40px);
+            height: calc(11 * 40px);
         }
-
-
+        .menu-item>input#menu-item4:checked~.menu-content {
+            height: calc(2 * 40px);
+        }
         .menu-content>span {
             width: 100%;
             text-indent: 20px;
             line-height: 40px;
             border-radius: var(--border-radius-mi);
         }
-
-
         .menu-content>span:hover {
             background-color: var(--color-bg-mi-hover);
             color: var(--font-color-mi-hover);
         }
-
-
         .set-line {
             margin: 20px 0 10px 0;
             width: 100%;
             height: 2px;
             background-color: var(--color-line-bg);
         }
-
-
         @font-face {                                                        /*在此调用了同目录下的iconfont.ttf文件*/
             font-family: "iconfont"; /* Project id  */
             src: url('iconfont.ttf?t=1636282499752') format('truetype');    /*iconfont.ttf里面是一些图标*/
         }
-
-
         .iconfont {
             font-family: "iconfont" !important;
             font-size: 16px;
@@ -233,32 +201,22 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-
-
         .icon-down:before {
             content: "\e7ad";
         }
-
-
         .icon-a-01-shujuzhongxin:before {   /*小房子图标*/
             content: "\e609";
         }
-
-
         .icon-a-02-kechengguanli:before {   /*小标签图标*/
             content: "\e60a";
         }
-
-
         .icon-a-04-zixunfabu:before {     /*纸张图标*/
             content: "\e60b";
         }
 
-
         .icon-a-08-shezhi:before {      /*设置图标：小齿轮*/
             content: "\e60c";
         }
-
 
         .icon-yemianfanhui:before {     /*侧边栏向左收缩向右展开的小按钮的样式*/
             content: "\e601";
@@ -268,6 +226,11 @@
             margin-top: 10px;             /* 上边距为 5 像素，调整图片相对于文字向下的偏移 */
             width: 20px;                 /* 图片宽度为 20 像素 */
             height: 20px;                /* 图片高度为 20 像素 */
+        }
+        .menu-box .menu-item .coordinates-popup {
+            z-index: 9999;
+            background-color: #ffffff !important; /* 使用你想要的浅色背景色 */
+            border-radius: 5px; /* 可根据需要调整边框圆角 */
         }
     </style>
 </head>
@@ -285,57 +248,106 @@
                 <h1>菜单</MENU></h1>
 
             </div>
-            <!--第一个菜单夹 : 坐标显示-->
-            <div class="menu-item">
+            <div class="menu-content-wrapper">
+                <!--第一个菜单夹 : 导航定位-->
+                <div class="menu-item">
 
-                <input type="checkbox" id="menu-item1">  <!--菜单夹的展开与收回,在index.css中注释掉.menu-box input[type='checkbox'] 就可以明白-->
+                    <input type="checkbox" id="menu-item1">  <!--菜单夹的展开与收回,在index.css中注释掉.menu-box input[type='checkbox'] 就可以明白-->
 
-                <label for="menu-item1">                 <!--标签内容-->
-                    <i class="menu-item-icon iconfont icon-a-02-kechengguanli"></i>  <!--房子图标-->
+                    <label for="menu-item1">                 <!--标签内容-->
+                        <i class="menu-item-icon iconfont icon-a-02-kechengguanli"></i>  <!--房子图标-->
 
-                    <span style="font-size: 22px;">导航定位</span>                            <!--菜单夹文字-->
+                        <span style="font-size: 18px;">导航定位</span>                            <!--菜单夹文字-->
 
-                    <i class="menu-item-last iconfont icon-down"></i>  <!--向上和向下的小箭头-->
-                </label>
-                <div class="menu-content">
-                    <span onclick="loran_display()">
-                        跟随罗兰
-                        <img src="./icon/picture1.jpg" alt="北斗定位图片">
-                    </span>
-                    <span onclick="beidou_display()">
-                        跟随北斗
-                        <img src="./icon/picture2.jpg" alt="北斗定位图片">
-                    </span>
-                </div>
-            </div>
-            <div class="menu-item">
-
-                <input type="checkbox" id="menu-item2">  <!--菜单夹的展开与收回,在index.css中注释掉.menu-box input[type='checkbox'] 就可以明白-->
-
-                <label for="menu-item2">                 <!--标签内容-->
-                    <i class="menu-item-icon iconfont icon-a-02-kechengguanli"></i>  <!--房子图标-->
-
-                    <span style="font-size: 22px;">轨迹绘制</span>                            <!--菜单夹文字-->
-
-                    <i class="menu-item-last iconfont icon-down"></i>  <!--向上和向下的小箭头-->
-                </label>
-                <div class="menu-content">
-                    <div>
-                        <input type="text" id="intervalTimeInput" size="20" style="width:150px; height: 25px;" placeholder="输入间隔时间/50ms">
-                        <button onclick="inputIntervalTime()" style="height: 30px;">确定</button>
+                        <i class="menu-item-last iconfont icon-down"></i>  <!--向上和向下的小箭头-->
+                    </label>
+                    <div class="menu-content">
+                        <span onclick="loran_display()" style="font-size: 16px;">
+                            跟随罗兰
+                            <img src="./icon/picture1.jpg" alt="北斗定位图片">
+                        </span>
+                        <span onclick="beidou_display()" style="font-size: 16px;">
+                            跟随北斗
+                            <img src="./icon/picture2.jpg" alt="北斗定位图片">
+                        </span>
                     </div>
-                    <span onclick="loranDraw()">
-                        罗兰轨迹绘制(蓝)
-                    </span>
-                    <span onclick="beidouDraw()">
-                        北斗轨迹绘制(红)
-                    </span>
-                    <span onclick="stopDraw()">
-                        暂停绘制
-                    </span>
-                    <span onclick="clearTrajectory()">
-                        清除轨迹
-                    </span>
+                </div>
+                <!--第二个菜单夹 : 轨迹绘制-->
+                <div class="menu-item">
+
+                    <input type="checkbox" id="menu-item2">  <!--菜单夹的展开与收回,在index.css中注释掉.menu-box input[type='checkbox'] 就可以明白-->
+
+                    <label for="menu-item2">                 <!--标签内容-->
+                        <i class="menu-item-icon iconfont icon-a-02-kechengguanli"></i>  <!--房子图标-->
+
+                        <span style="font-size: 18px;">轨迹绘制</span>                            <!--菜单夹文字-->
+
+                        <i class="menu-item-last iconfont icon-down"></i>  <!--向上和向下的小箭头-->
+                    </label>
+                    <div class="menu-content">
+                        <div>
+                            <input type="text" id="intervalTimeInput" size="20" style="width:150px; height: 25px;" placeholder="输入间隔时间/50ms">
+                            <button onclick="inputIntervalTime()" style="height: 30px;">确定</button>
+                        </div>
+                        <span onclick="loranDraw()" style="font-size: 16px;">
+                            罗兰轨迹绘制(蓝)
+                        </span>
+                        <span onclick="beidouDraw()" style="font-size: 16px;">
+                            北斗轨迹绘制(红)
+                        </span>
+                        <span onclick="stopDraw()" style="font-size: 16px;">
+                            暂停绘制
+                        </span>
+                        <span onclick="clearTrajectory()" style="font-size: 16px;">
+                            清除轨迹
+                        </span>
+                    </div>
+                </div>
+                <!--第三个菜单夹 : 静态数据分析-->
+                <div class="menu-item">
+
+                    <input type="checkbox" id="menu-item3">  <!--菜单夹的展开与收回,在index.css中注释掉.menu-box input[type='checkbox'] 就可以明白-->
+
+                    <label for="menu-item3">                 <!--标签内容-->
+                        <i class="menu-item-icon iconfont icon-a-02-kechengguanli"></i>  <!--房子图标-->
+
+                        <span style="font-size: 18px;">静态数据分析</span>                            <!--菜单夹文字-->
+
+                        <i class="menu-item-last iconfont icon-down"></i>  <!--向上和向下的小箭头-->
+                    </label>
+                    <div class="menu-content">
+                        <span class = "toggle-span" onclick="suspend()" style="font-size: 16px;">
+                            暂停
+                        </span>
+                        <span onclick="showLoran()" style="font-size: 16px;">
+                            当前罗兰坐标
+                        </span>
+                        <div id="loranCoordinatesPopup" class="coordinates-popup" style="display: none;"></div>
+                        <span onclick="showBeidou()" style="font-size: 16px;">
+                            当前北斗坐标
+                        </span>
+                        <div id="beidouCoordinatesPopup" class="coordinates-popup" style="display: none;"></div>
+                        <span onclick="showDistance()" style="font-size: 16px;">
+                            当前相对距离
+                        </span>
+                        <div id="distanceCoordinatesPopup" class="coordinates-popup" style="display: none;"></div>
+                    </div>
+                </div>
+                <!--第四个菜单夹 : 动态数据分析-->
+                <div class="menu-item">
+                    <input type="checkbox" id="menu-item4">  <!--菜单夹的展开与收回,在index.css中注释掉.menu-box input[type='checkbox'] 就可以明白-->
+                    <label for="menu-item4">                 <!--标签内容-->
+                        <i class="menu-item-icon iconfont icon-a-02-kechengguanli"></i>  <!--房子图标-->
+
+                        <span style="font-size: 18px;">动态数据分析</span>                            <!--菜单夹文字-->
+
+                        <i class="menu-item-last iconfont icon-down"></i>  <!--向上和向下的小箭头-->
+                    </label>
+                    <div class="menu-content">
+                        <span onclick="DistanceChart()" style="font-size: 16px;">
+                            动态距离折线图
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -405,10 +417,12 @@
         var countTime = 0;//地图中心更新时间
         var updateCenter = 1;
         //坐标时间信息
-        var loranLatitude, loranLongitude, beidouLatitude, beidouLongitude, nowTime;
+        var loranLatitude, loranLongitude, beidouLatitude, beidouLongitude,distance,nowTime;
         //loran北斗图标的显示与否
         var loranDisplay = true;
         var beidouDisplay = false;
+        var loranPoint;//loran点位
+        var beidouPoint;//北斗点位
         //图标的方向角度
         let direction = new Rad(0,140);
         //轨迹记录时间间隔
@@ -420,6 +434,8 @@
         var beidouTrajectoryPoints = [];
         var trajectoryPolylineLoran; //loran轨迹
         var trajectoryPolylineBeidou //北斗轨迹
+        
+        var isPaused = true; // 静态数据处理中的暂停按钮
     </script>
     <script>
         //主要地图与功能的实现
@@ -449,48 +465,50 @@
                 // 在放缩结束后检查放缩级别
                 var currentlZoom = map.getZoom();
             });
-            fetch('get_location.php')
-                .then(response => response.json())
-                .then(data => {
-                    // 获取新的坐标时间信息
-                    loranLatitude = data.loran_latitude;
-                    loranLongitude = data.loran_longitude;
-                    beidouLatitude = data.beidou_latitude;
-                    beidouLongitude = data.beidou_longitude;
-                    nowTime = data.time;
-                    
-                    var loranPoint = new BMapGL.Point(loranLongitude, loranLatitude);
-                    var beidouPoint = new BMapGL.Point(beidouLongitude, beidouLatitude);
-                    // 使用百度地图的动画效果移动标记到新的坐标位置
-                    direction.changeDirection(map,loranMarker,beidouMarker,loranPoint,beidouPoint);
-                    loranMarker.setPosition(loranPoint);
-                    beidouMarker.setPosition(beidouPoint);
-                    //鼠标在地图上按下，这个时候由用户自主拖动界面不在跟随
-                    map.addEventListener("mousedown", function (e) {
-                        loranDisplay = false;
-                        beidouDisplay = false;
-                    });
-                    //对于按下定位后的处理
-                    countTime+=1;
-                    if(countTime === updateCenter){
-                        countTime = 0;
-                        if(loranDisplay){
-                            map.panTo(loranPoint);
-                        }
-                        if(beidouDisplay){
-                            map.panTo(beidouPoint);
-                        }
-                    }
-                    if(loranRecordSignal){
-                        addLoranPoints();
-                        drawLoranTrajectory();
-                    }
-                    if(beidouRecordSignal){
-                        addBeidouPoints();
-                        drawBeidouTrajectory();
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+            if(isPaused){
+                fetch('get_location.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        // 获取新的坐标时间信息
+                        loranLatitude = data.loran_latitude;
+                        loranLongitude = data.loran_longitude;
+                        beidouLatitude = data.beidou_latitude;
+                        beidouLongitude = data.beidou_longitude;
+                        distance = data.distance;
+                        nowTime = data.time;
+                    })
+                    .catch(error => console.error('Error:', error));
+                loranPoint = new BMapGL.Point(loranLongitude, loranLatitude);
+                beidouPoint = new BMapGL.Point(beidouLongitude, beidouLatitude);
+                // 使用百度地图的动画效果移动标记到新的坐标位置
+                direction.changeDirection(map,loranMarker,beidouMarker,loranPoint,beidouPoint);
+                loranMarker.setPosition(loranPoint);
+                beidouMarker.setPosition(beidouPoint);
+            }
+            //鼠标在地图上按下，这个时候由用户自主拖动界面不在跟随
+            map.addEventListener("mousedown", function (e) {
+                loranDisplay = false;
+                beidouDisplay = false;
+            });
+            //对于按下定位后的处理
+            countTime+=1;
+            if(countTime === updateCenter){
+                countTime = 0;
+                if(loranDisplay){
+                    map.panTo(loranPoint);
+                }
+                if(beidouDisplay){
+                    map.panTo(beidouPoint);
+                }
+            }
+            if(loranRecordSignal){
+                addLoranPoints();
+                drawLoranTrajectory();
+            }
+            if(beidouRecordSignal){
+                addBeidouPoints();
+                drawBeidouTrajectory();
+            }
         }, 50);
     </script>
     <script type="text/javascript">
@@ -689,6 +707,107 @@
             beidouRecordSignal = false;
             loranTrajectoryPoints = [];//清空列表
             beidouTrajectoryPoints = [];
+        }
+    </script>
+    <script>
+        //静态数据处理相关函数
+        var loranClickCount = 0;//罗兰计数
+        var beidouClickCount = 0;//北斗计数
+        var distanceClickCount = 0;//距离计数
+        var overlays = [];//覆盖物数组
+        function showLoran(){
+            if(!isPaused){
+                loranClickCount +=1;
+                var loranCoordinatesPopup = document.getElementById('loranCoordinatesPopup');
+                if(loranClickCount%2===0){
+                    loranCoordinatesPopup.innerHTML = '';
+                }
+                else{
+                    // 模拟获取罗兰坐标信息
+                    var latitude = loranLatitude;
+                    var longitude = loranLongitude;
+                    // 更新容器内容
+                    loranCoordinatesPopup.innerHTML = '<p>纬度: ' + latitude + '</p><p>经度: ' + longitude + '</p>';
+                    // 设置容器样式
+                    loranCoordinatesPopup.style.display = 'block';
+                }
+            }
+            else{
+                alert("请先暂停")
+            }
+        }
+        function showBeidou(){
+            if(!isPaused){
+                beidouClickCount +=1;
+                var beidouCoordinatesPopup = document.getElementById('beidouCoordinatesPopup');
+                if(beidouClickCount%2===0){
+                    beidouCoordinatesPopup.innerHTML = '';
+                }
+                else{
+                    // 模拟获取罗兰坐标信息
+                    var latitude = beidouLatitude;
+                    var longitude = beidouLongitude;
+                    // 更新容器内容
+                    beidouCoordinatesPopup.innerHTML = '<p>纬度: ' + latitude + '</p><p>经度: ' + longitude + '</p>';
+                    // 设置容器样式
+                    beidouCoordinatesPopup.style.display = 'block';
+                }
+            }
+            else{
+                alert("请先暂停")
+            }
+        }
+        function showDistance(){
+            if(!isPaused){
+                distanceClickCount +=1;
+                var distanceCoordinatesPopup = document.getElementById('distanceCoordinatesPopup');
+                if(distanceClickCount%2===0){
+                    distanceCoordinatesPopup.innerHTML = '';
+                }
+                else{
+                    distanceCoordinatesPopup.innerHTML = '<p>距离: ' + distance + '</p>';
+                    distanceCoordinatesPopup.style.display = 'block';
+                }
+                var twoPolyline = new BMapGL.Polyline([loranPoint,beidouPoint], { strokeColor: "black", strokeWeight: 2, strokeOpacity: 0.8 });
+                map.addOverlay(twoPolyline);
+                overlays.push(twoPolyline);
+                // 计算两点之间的中点坐标
+                var midPoint = new BMapGL.Point((loranPoint.lng + beidouPoint.lng) / 2, (loranPoint.lat + beidouPoint.lat) / 2);
+                // 在中点添加标签显示距离
+                var midlabel = new BMapGL.Label("距离：" + distance.toFixed(4) + " 千米", { position: midPoint });
+                midlabel.setStyle({ color: "red", fontSize: "12px", border: "none", backgroundColor: "transparent" });
+                map.addOverlay(midlabel);
+                overlays.push(midlabel);
+                // 设置地图中心和缩放级别
+                map.centerAndZoom(midPoint,initialZoom );
+            }
+            else{
+                alert("请先暂停")
+            }        
+        }
+        function suspend(){
+            var spanElement = document.querySelector('.toggle-span');
+            // 切换状态
+            isPaused = !isPaused;
+            // 更改文本内容和样式
+            loranDisplay = false;
+            beidouDisplay = false;
+            if (isPaused) {
+                spanElement.textContent = '暂停';
+            } else {
+                spanElement.textContent = '开始';
+            }
+            // 移除特定的覆盖物
+            for (var i = 0; i < overlays.length; i++) {
+                map.removeOverlay(overlays[i]);
+            }
+            overlays = [];  // 清空数组
+            var loranCoordinatesPopup = document.getElementById('loranCoordinatesPopup');
+            var beidouCoordinatesPopup = document.getElementById('beidouCoordinatesPopup');
+            var distanceCoordinatesPopup = document.getElementById('distanceCoordinatesPopup');
+            loranCoordinatesPopup.innerHTML = '';
+            beidouCoordinatesPopup.innerHTML = '';
+            distanceCoordinatesPopup.innerHTML = '';
         }
     </script>
 </body>
