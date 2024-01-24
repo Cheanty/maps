@@ -1,8 +1,8 @@
 {
-  "loran_latitude": 30.521413999999933,
-  "loran_longitude": 114.44291299999972,
-  "beidou_latitude": 30.517914000000065,
-  "beidou_longitude": 114.43925300000029,
+  "loran_latitude": 30.521683999999922,
+  "loran_longitude": 114.44396299999956,
+  "beidou_latitude": 30.517644000000075,
+  "beidou_longitude": 114.43820300000046,
   "distance": 100,
-  "time": "2024-01-24T22:13:55"
+  "time": "2024-01-24T22:14:20"
 }
