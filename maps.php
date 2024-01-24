@@ -16,9 +16,13 @@
     <link href="//mapopen.cdn.bcebos.com/github/BMapGLLib/DrawingManager/src/DrawingManager.min.css" rel="stylesheet">              <!--调用一些库（图片，样式等）-->
     <script type="text/javascript" src="//mapopen.cdn.bcebos.com/github/BMapGLLib/DrawingManager/src/DrawingManager.min.js"></script>
 
-    <title>增强罗兰系统——北斗地图</title>
+    <title>loranMaps</title>
 
     <style>
+        /*搜索框显示补丁*/
+        .tangram-suggestion-main{
+            z-index:99999999;
+        }
         /* 全屏地图 css*/
         html, body, #allmap{
             width: 100%;
@@ -68,7 +72,6 @@
         .menu-box input[type='checkbox'] {
             display: none;                      /*让小勾选框消失*/
         }
-
 
         .menu-box>label {
             position: absolute;
@@ -133,7 +136,7 @@
         .menu-item>label{
             position: relative;
             width: 100%;
-            height: 50px;
+            height: 100px;
             border-radius: var(--border-radius-mi);
             display: flex;
             align-items: center;
@@ -181,12 +184,12 @@
         }
          /* 菜单夹下选项个数，若 n 项，就 n * 40px */
          .menu-item>input#menu-item1:checked~.menu-content {
-            height: calc(4 * 40px);
+            height: calc(2 * 40px);
         }
 
 
         .menu-item>input#menu-item2:checked~.menu-content {
-            height: calc(3 * 40px);
+            height: calc(5 * 40px);
         }
 
 
@@ -260,6 +263,12 @@
         .icon-yemianfanhui:before {     /*侧边栏向左收缩向右展开的小按钮的样式*/
             content: "\e601";
         }
+        .menu-content>span img {
+            margin-left: 10px;           /* 左边距为 10 像素，调整图片与文字之间的间距 */
+            margin-top: 10px;             /* 上边距为 5 像素，调整图片相对于文字向下的偏移 */
+            width: 20px;                 /* 图片宽度为 20 像素 */
+            height: 20px;                /* 图片高度为 20 像素 */
+        }
     </style>
 </head>
 <body>
@@ -282,22 +291,65 @@
                 <input type="checkbox" id="menu-item1">  <!--菜单夹的展开与收回,在index.css中注释掉.menu-box input[type='checkbox'] 就可以明白-->
 
                 <label for="menu-item1">                 <!--标签内容-->
-                    <i class="menu-item-icon iconfont icon-a-02-kechengguanli""></i>  <!--房子图标-->
+                    <i class="menu-item-icon iconfont icon-a-02-kechengguanli"></i>  <!--房子图标-->
 
-                    <span>定位</span>                            <!--菜单夹文字-->
+                    <span style="font-size: 22px;">导航定位</span>                            <!--菜单夹文字-->
 
                     <i class="menu-item-last iconfont icon-down"></i>  <!--向上和向下的小箭头-->
                 </label>
                 <div class="menu-content">
-                    <span onclick="beidou_display()">北斗定位</span>
-                    <span onclick="loran_display()">罗兰定位</span>
+                    <span onclick="loran_display()">
+                        跟随罗兰
+                        <img src="./icon/picture1.jpg" alt="北斗定位图片">
+                    </span>
+                    <span onclick="beidou_display()">
+                        跟随北斗
+                        <img src="./icon/picture2.jpg" alt="北斗定位图片">
+                    </span>
+                </div>
+            </div>
+            <div class="menu-item">
+
+                <input type="checkbox" id="menu-item2">  <!--菜单夹的展开与收回,在index.css中注释掉.menu-box input[type='checkbox'] 就可以明白-->
+
+                <label for="menu-item2">                 <!--标签内容-->
+                    <i class="menu-item-icon iconfont icon-a-02-kechengguanli"></i>  <!--房子图标-->
+
+                    <span style="font-size: 22px;">轨迹绘制</span>                            <!--菜单夹文字-->
+
+                    <i class="menu-item-last iconfont icon-down"></i>  <!--向上和向下的小箭头-->
+                </label>
+                <div class="menu-content">
+                    <div>
+                        <input type="text" id="intervalTimeInput" size="20" style="width:150px; height: 25px;" placeholder="输入间隔时间/50ms">
+                        <button onclick="inputIntervalTime()" style="height: 30px;">确定</button>
+                    </div>
+                    <span onclick="loranDraw()">
+                        罗兰轨迹绘制(蓝)
+                    </span>
+                    <span onclick="beidouDraw()">
+                        北斗轨迹绘制(红)
+                    </span>
+                    <span onclick="stopDraw()">
+                        暂停绘制
+                    </span>
+                    <span onclick="clearTrajectory()">
+                        清除轨迹
+                    </span>
                 </div>
             </div>
         </div>
     </div>
     <!-- 全屏地图 -->
     <div id="allmap"></div>
+    <!-- 城市跳转 -->
+    <div id="r-result" style="position: fixed; top: 10px; right: 10px; z-index: 1000;">
+        <input type="text" id="suggestId" size="20" style="width:150px; height: 25px;" placeholder="请输入城市坐标">
+        <button onclick="locateCity()" style="height: 30px;">定位</button>
+    </div>
+    <div id="searchResultPanel" style="position: fixed; top: 50px; right: 10px; border: 1px solid #C0C0C0; width: 150px; height: auto; display: none; z-index: 999;">
     <script>
+        //旋转定位类
         class Rad{
             constructor(loranRad,beidouRad){
                 this.changeCount = 0;
@@ -338,45 +390,55 @@
                     var beidouRad = this.beidouDirectionAngle(map);
                     loranMarker.setRotation(loranRad);
                     beidouMarker.setRotation(beidouRad);
-                    
-                    
                 }
             }
         }
     </script>
     <script>
-        // 创建地图，并定位到当前位置
-        var map = new BMapGL.Map("allmap");
-        var geolocation = new BMapGL.Geolocation();
+        //全局变量的创建
+
+        var map = new BMapGL.Map("allmap");// 创建地图
         var start = true;//使用百度自带定位的关闭标志
         var marker; // 将标记声明在外面，以便在后续代码中访问
-        var initialZoom = 18;//默认的放缩等级
+        var initialZoom = 17;//默认的放缩等级
         var currentlZoom;//当前的放缩等级
+        var countTime = 0;//地图中心更新时间
+        var updateCenter = 1;
         //坐标时间信息
         var loranLatitude, loranLongitude, beidouLatitude, beidouLongitude, nowTime;
-        //用户点击信息
+        //loran北斗图标的显示与否
         var loranDisplay = true;
         var beidouDisplay = false;
         //图标的方向角度
         let direction = new Rad(0,140);
+        //轨迹记录时间间隔
+        var intervalTime = 0;
+        var currentTime = 0;
+        var loranRecordSignal = false;
+        var beidouRecordSignal = false;
+        var loranTrajectoryPoints = []; //用来存储需要记录的轨迹点
+        var beidouTrajectoryPoints = [];
+        var trajectoryPolylineLoran; //loran轨迹
+        var trajectoryPolylineBeidou //北斗轨迹
+    </script>
+    <script>
+        //主要地图与功能的实现
+
         //地图的初始化、图标的添加
+        var geolocation = new BMapGL.Geolocation();
         geolocation.getCurrentPosition(function(r) {
             if (this.getStatus() == BMAP_STATUS_SUCCESS && start) {
                 start = false;
                 map.centerAndZoom(r.point,initialZoom);
                 map.enableScrollWheelZoom(true,initialZoom);
                 // 创建自定义图标
-                var loranIcon = new BMapGL.Icon('./icon/picture1.jpg', new BMapGL.Size(32, 32));
+                var loranIcon = new BMapGL.Icon('./icon/picture1.jpg', new BMapGL.Size(30, 30));
                 var beidouIcon = new BMapGL.Icon('./icon/picture2.jpg', new BMapGL.Size(32, 32));
                 // 创建标记并添加到地图
                 loranMarker = new BMapGL.Marker(r.point,{ icon: loranIcon });
                 beidouMarker = new BMapGL.Marker(r.point,{ icon: beidouIcon });
                 map.addOverlay(loranMarker);
                 map.addOverlay(beidouMarker);
-                //显示当前坐标，测试用，可删除
-                // var currentLatitude = r.point.lat;
-                // var currentLongitude = r.point.lng;
-                // alert('当前坐标：' + currentLatitude + ', ' + currentLongitude);
             }
         });
 
@@ -385,7 +447,7 @@
             // 发起请求获取 JSON 数据
             map.addEventListener("zoomend", function () {
                 // 在放缩结束后检查放缩级别
-                var currentZoom = map.getZoom();
+                var currentlZoom = map.getZoom();
             });
             fetch('get_location.php')
                 .then(response => response.json())
@@ -409,17 +471,99 @@
                         beidouDisplay = false;
                     });
                     //对于按下定位后的处理
-                    if(loranDisplay){
-                        map.panTo(loranPoint);
+                    countTime+=1;
+                    if(countTime === updateCenter){
+                        countTime = 0;
+                        if(loranDisplay){
+                            map.panTo(loranPoint);
+                        }
+                        if(beidouDisplay){
+                            map.panTo(beidouPoint);
+                        }
                     }
-                    if(beidouDisplay){
-                        map.panTo(beidouPoint);
+                    if(loranRecordSignal){
+                        addLoranPoints();
+                        drawLoranTrajectory();
+                    }
+                    if(beidouRecordSignal){
+                        addBeidouPoints();
+                        drawBeidouTrajectory();
                     }
                 })
                 .catch(error => console.error('Error:', error));
         }, 50);
     </script>
+    <script type="text/javascript">
+        // 搜索功能
+        function G(id) {
+            return document.getElementById(id);
+        }
+        var ac = new BMapGL.Autocomplete(    //建立一个自动完成的对象
+            {"input" : "suggestId"
+            ,"location" : map
+        });
+        ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+        var str = "";
+            var _value = e.fromitem.value;
+            var value = "";
+            if (e.fromitem.index > -1) {
+                value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+            }    
+            str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+            
+            value = "";
+            if (e.toitem.index > -1) {
+                _value = e.toitem.value;
+                value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+            }    
+            str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+            G("searchResultPanel").innerHTML = str;
+        });
+
+        var myValue;
+        ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+        var _value = e.item.value;
+            myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+            G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+            
+            setPlace();
+        });
+
+        function setPlace(){
+            //map.clearOverlays();    //清除地图上所有覆盖物
+            function myFun(){
+                var pp = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
+                map.centerAndZoom(pp, initialZoom-3);
+            }
+            var local = new BMapGL.LocalSearch(map, { //智能搜索
+            onSearchComplete: myFun
+            });
+            local.search(myValue);
+        }
+        function locateCity() {
+            // 获取输入框中的城市名称
+            var cityInput = G("suggestId").value;
+            // 如果城市名称为空，可以在这里添加一些提示或默认行为
+            if (!cityInput.trim()) {
+                alert("请输入城市名称");
+                return;
+            }
+
+            // 使用百度地图的自动完成功能获取城市坐标
+            var myGeo = new BMapGL.Geocoder();
+            myGeo.getPoint(cityInput, function(point) {
+                if (point) {
+                    // 将地图定位到城市位置
+                    map.centerAndZoom(point,initialZoom-3);
+                } else {
+                    alert("无法定位到该城市");
+                }
+            }, "城市名称");
+        }
+    </script>
     <script>
+        //与定位，角度计算相关的函数
+
         //loran定位
         function loran_display(){
             var loranPoint = new BMapGL.Point(loranLongitude, loranLatitude);
@@ -445,10 +589,106 @@
             var deltaY = lat2 - lat1;
             var deltaX = lng2 - lng1;
             // 使用 Math.atan2 计算方向角度
-            var angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
-            // 调整角度范围为 [0, 360]
-            angle = (angle + 360) % 360;
+            var angle = Math.atan2(deltaX, deltaY) * (180 / Math.PI);
             return angle;
+        }
+    </script>
+    <script>
+        //轨迹绘制相关函数
+
+        function drawLoranTrajectory() {
+            // 创建轨迹线覆盖物
+            trajectoryPolylineLoran = new BMapGL.Polyline(
+                loranTrajectoryPoints.map(point => new BMapGL.Point(point.loranLongitude, point.loranLatitude)),
+                { strokeColor: "blue", strokeWeight: 3, strokeOpacity: 0.5 }
+            );
+
+            // 添加轨迹线到地图
+            map.addOverlay(trajectoryPolylineLoran);
+        }
+        function drawBeidouTrajectory() {
+            // 创建轨迹线覆盖物
+            trajectoryPolylineBeidou = new BMapGL.Polyline(
+                beidouTrajectoryPoints.map(point => new BMapGL.Point(point.beidouLongitude, point.beidouLatitude)),
+                { strokeColor: "red", strokeWeight: 3, strokeOpacity: 0.5 }
+            );
+            // 添加轨迹线到地图
+            map.addOverlay(trajectoryPolylineBeidou);
+        }
+        function inputIntervalTime() {
+            //记录间隔时间获取
+
+            // 获取输入框的值
+            var intervalTimeValue = document.getElementById('intervalTimeInput').value;
+
+            // 将输入的字符串转换为整数
+            var intervalTimeNumber = parseInt(intervalTimeValue, 10);
+
+            // 检查是否成功转换为数字
+            if (!isNaN(intervalTimeNumber)) {
+                // 在这里可以使用 intervalTimeNumber 进行后续处理
+                intervalTime = intervalTimeNumber;
+                console.log('输入的间隔时间为:', intervalTimeNumber);
+            } else {
+                // 如果转换失败，可以进行适当的错误处理
+                console.error('无效的输入，不是一个数字');
+            }
+        }
+        function loranDraw(){
+            //开始记录
+            // map.removeOverlay(trajectoryPolylineLoran);            
+            if(intervalTime!==0)loranRecordSignal = true;
+        }
+        function beidouDraw(){
+            // map.removeOverlay(trajectoryPolylineBeidou);
+            //开始记录
+            if(intervalTime!==0)beidouRecordSignal = true;
+        }
+        function stopDraw(){
+            loranTrajectoryPoints = [];
+            beidouTrajectoryPoints = [];
+            loranRecordSignal = false;
+            beidouRecordSignal = false;
+        }
+        function addLoranPoints(){
+            if(currentTime < intervalTime){
+                currentTime +=1;
+            }
+            else{
+                currentTime = 0;
+                loranTrajectoryPoints.push({
+                    loranLatitude: loranLatitude,
+                    loranLongitude: loranLongitude
+                });
+            }
+        }
+        function addBeidouPoints(){
+            if(currentTime < intervalTime){
+                currentTime +=1;
+            }
+            else{
+                currentTime = 0;
+                beidouTrajectoryPoints.push({
+                    beidouLatitude: beidouLatitude,
+                    beidouLongitude: beidouLongitude,
+                });
+            }
+        }
+        function clearTrajectory(){
+            //清除轨迹
+
+            // 获取地图上的所有覆盖物
+            var overlays = map.getOverlays();
+            // 遍历覆盖物，找到类型为 Polyline 的覆盖物并移除
+            for (var i = 0; i < overlays.length; i++) {
+                if (overlays[i] instanceof BMapGL.Polyline) {
+                    map.removeOverlay(overlays[i]);
+                }
+            }
+            loranRecordSignal = false;
+            beidouRecordSignal = false;
+            loranTrajectoryPoints = [];//清空列表
+            beidouTrajectoryPoints = [];
         }
     </script>
 </body>
